@@ -1,0 +1,27 @@
+defaults:
+  - override hydra/launcher: slurm
+
+tags: ~
+command: ~
+shard_num: ~
+
+hydra:
+  launcher:
+    cpus_per_task: 4
+    symlink_dir: /checkpoint/${oc.env:USER}
+    job_name: ${hydra.job.name}
+    mem: 10G
+    env_type: venv
+    env_name: robust
+    gres: gpu:0
+    partition: cpu
+    exclude: "gpu177,cpu003"
+    qos: normal
+##### SUGGESTED HYDRA CONFIG ###########################
+  sweep: 
+    # subdir is built dynamically using the tags
+    dir: ${oc.env:HOME}/slurm/${oc.select:hydra.launcher.date,${now:%Y-%m-%d}}/${hydra.job.name}
+  run:
+    # once we're running set tags from conf
+    dir: ${hydra.sweep.dir}/${join:${tags}}
+########################################################
